@@ -43,6 +43,7 @@ export const useUserStatsStore = defineStore('userStats', () => {
   const taggedItems = computed(() => userStats.value.taggedItems);
   const history = computed(() => userStats.value.history);
   const frequentItems = computed(() => userStats.value.frequentItems);
+  const folderColors = computed(() => userStats.value.folderColors ?? {});
 
   const sortedHistory = computed(() => {
     return [...userStats.value.history].sort((itemA, itemB) => itemB.openedAt - itemA.openedAt);
@@ -157,6 +158,7 @@ export const useUserStatsStore = defineStore('userStats', () => {
         await userStatsStorage.value.set('taggedItems', userStats.value.taggedItems);
         await userStatsStorage.value.set('history', userStats.value.history);
         await userStatsStorage.value.set('frequentItems', userStats.value.frequentItems);
+        await userStatsStorage.value.set('folderColors', userStats.value.folderColors ?? {});
         await userStatsStorage.value.save();
       }
     }
@@ -199,6 +201,30 @@ export const useUserStatsStore = defineStore('userStats', () => {
       await addToFavorites(path);
       return true;
     }
+  }
+
+  function getFolderColor(path: string): string | null {
+    return userStats.value.folderColors?.[path] ?? null;
+  }
+
+  async function setFolderColor(paths: string[], color: string | null) {
+    if (paths.length === 0) {
+      return;
+    }
+
+    const pathSet = new Set(paths);
+    const nextColors: Record<string, string> = Object.fromEntries(
+      Object.entries(userStats.value.folderColors ?? {}).filter(([colorPath]) => !pathSet.has(colorPath)),
+    );
+
+    if (color) {
+      for (const path of paths) {
+        nextColors[path] = color;
+      }
+    }
+
+    userStats.value.folderColors = nextColors;
+    await saveStats();
   }
 
   function getItemTags(path: string): ItemTag[] {
@@ -500,6 +526,26 @@ export const useUserStatsStore = defineStore('userStats', () => {
       }
     }
 
+    const renamedFolderColors: Record<string, string> = {};
+    let folderColorsChanged = false;
+
+    for (const [colorPath, color] of Object.entries(userStats.value.folderColors ?? {})) {
+      const updated = replacePathPrefix(colorPath, oldPath, newPath);
+
+      if (updated !== null) {
+        renamedFolderColors[updated] = color;
+        folderColorsChanged = true;
+      }
+      else {
+        renamedFolderColors[colorPath] = color;
+      }
+    }
+
+    if (folderColorsChanged) {
+      userStats.value.folderColors = renamedFolderColors;
+      hasChanges = true;
+    }
+
     if (hasChanges) {
       await saveStats();
     }
@@ -519,11 +565,13 @@ export const useUserStatsStore = defineStore('userStats', () => {
   }
 
   async function handlePathsDeleted(paths: string[]) {
+    const originalFolderColors = userStats.value.folderColors ?? {};
     const originalCounts = {
       favorites: userStats.value.favorites.length,
       taggedItems: userStats.value.taggedItems.length,
       history: userStats.value.history.length,
       frequentItems: userStats.value.frequentItems.length,
+      folderColors: Object.keys(originalFolderColors).length,
     };
 
     userStats.value.favorites = userStats.value.favorites.filter(
@@ -542,11 +590,17 @@ export const useUserStatsStore = defineStore('userStats', () => {
       item => !isPathAffectedByDeletion(item.path, paths),
     );
 
+    const remainingFolderColors = Object.fromEntries(
+      Object.entries(originalFolderColors).filter(([colorPath]) => !isPathAffectedByDeletion(colorPath, paths)),
+    );
+    userStats.value.folderColors = remainingFolderColors;
+
     const hasChanges
       = userStats.value.favorites.length !== originalCounts.favorites
         || userStats.value.taggedItems.length !== originalCounts.taggedItems
         || userStats.value.history.length !== originalCounts.history
-        || userStats.value.frequentItems.length !== originalCounts.frequentItems;
+        || userStats.value.frequentItems.length !== originalCounts.frequentItems
+        || Object.keys(remainingFolderColors).length !== originalCounts.folderColors;
 
     if (hasChanges) {
       await saveStats();
@@ -654,6 +708,7 @@ export const useUserStatsStore = defineStore('userStats', () => {
     taggedItems,
     history,
     frequentItems,
+    folderColors,
     sortedHistory,
     sortedFrequentItems,
     init,
@@ -662,6 +717,8 @@ export const useUserStatsStore = defineStore('userStats', () => {
     addToFavorites,
     removeFromFavorites,
     toggleFavorite,
+    getFolderColor,
+    setFolderColor,
     getItemTags,
     addTagToItem,
     removeTagFromItem,

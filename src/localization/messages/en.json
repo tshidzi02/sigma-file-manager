@@ -1,4 +1,28 @@
 {
+  "pinnedSidebar": {
+    "home": "Home",
+    "pinned": "Pinned",
+    "desktop": "Desktop",
+    "downloads": "Downloads",
+    "documents": "Documents",
+    "pictures": "Pictures",
+    "music": "Music",
+    "videos": "Videos",
+    "emptyHint": "Right-click a folder and choose \"Add to pinned\" to see it here"
+  },
+  "folderColors": {
+    "title": "Folder colour",
+    "reset": "Default colour",
+    "purple": "Purple",
+    "violet": "Violet",
+    "blue": "Blue",
+    "cyan": "Cyan",
+    "green": "Green",
+    "yellow": "Yellow",
+    "orange": "Orange",
+    "pink": "Pink",
+    "red": "Red"
+  },
   "app": {
     "name": "Sigma File Manager",
     "description": "is a free, open source, advanced, modern file manager app, licensed under GNU GPLv3 or later.",
@@ -29,9 +53,9 @@
   },
   "quickAccess": {
     "title": "Quick access",
-    "favorites": "Favorites",
+    "favorites": "Pinned",
     "tagged": "Tagged",
-    "emptyFavorites": "No favorites",
+    "emptyFavorites": "No pinned",
     "emptyTagged": "No tagged items",
     "unknownTagGroup": "Unknown tag"
   },
@@ -197,9 +221,9 @@
     "reloadCurrentDirectory": "Reload current directory"
   },
   "dashboard": {
-    "subtitle": "Quick access to your favorite, tagged, and frequently used items",
+    "subtitle": "Quick access to your pinned, tagged, and frequently used items",
     "tabs": {
-      "favorites": "Favorites",
+      "favorites": "Pinned",
       "tagged": "Tagged",
       "frequent": "Frequent",
       "history": "Recently viewed"
@@ -210,8 +234,8 @@
       "totalItems": "total items",
       "lastItems": "last items"
     },
-    "emptyFavorites": "No favorites yet",
-    "emptyFavoritesDescription": "Right-click on any file or folder in the navigator and select \"Add to favorites\" to see them here.",
+    "emptyFavorites": "No pinned yet",
+    "emptyFavoritesDescription": "Right-click on any file or folder in the navigator and select \"Add to pinned\" to see them here.",
     "emptyTagged": "No tagged items",
     "emptyTaggedDescription": "Use tags to organize and categorize your files and folders for quick access.",
     "emptyFrequent": "No frequently used items",
@@ -505,7 +529,7 @@
     },
     "stats": {
       "title": "User data",
-      "description": "The app stores data locally (tags, favorites, history, recently opened items) to enable features like dashboard lists and search. This data is stored in the app directory.",
+      "description": "The app stores data locally (tags, pinned, history, recently opened items) to enable features like dashboard lists and search. This data is stored in the app directory.",
       "openDataDirectory": "Open data directory"
     },
     "experimental": {
@@ -556,7 +580,7 @@
     "defaultDirectory": "home, locations, this pc, computer, drives, default folder, default directory, new tab, custom path",
     "startupPage": "startup page, startup, launch, open on launch, home, dashboard, navigator, last page, restore, page",
     "globalSearch": "global, search, find, look, filter, scan",
-    "stats": "stats, data, user, favorites, tags, history, recent, dashboard, storage",
+    "stats": "stats, data, user, pinned, tags, history, recent, dashboard, storage",
     "driveDetection": "drive, usb, storage, disk, device, detection, connection",
     "autoplay": "autoplay, explorer, windows, drive, usb, automatic, open, folder",
     "experimental": "advanced, experimental, default file manager, file explorer, registry, terminal, shell",
@@ -722,8 +746,8 @@
     "renamed": "Renamed",
     "trashedNItems": "Trashed {totalAmount} items",
     "deletedNItems": "Deleted {totalAmount} items",
-    "removedFromFavorites": "Removed 0 items from favorites | Removed 1 item from favorites | Removed {n} items from favorites | Removed {n} items from favorites",
-    "addedToFavorites": "Added 0 items to favorites | Added 1 item to favorites | Added {n} items to favorites | Added {n} items to favorites",
+    "removedFromFavorites": "Removed 0 items from pinned | Removed 1 item from pinned | Removed {n} items from pinned | Removed {n} items from pinned",
+    "addedToFavorites": "Added 0 items to pinned | Added 1 item to pinned | Added {n} items to pinned | Added {n} items to pinned",
     "noUpdatesAvailable": "No updates available",
     "viewRelease": "View release",
     "downloadInstallerFailed": "Could not download installer",
@@ -993,8 +1017,8 @@
       "print": "Print",
       "share": "Share over LAN",
       "openInNewTab": "Open in new tab",
-      "addToFavorites": "Add to favorites",
-      "removeFromFavorites": "Remove from favorites"
+      "addToFavorites": "Add to pinned",
+      "removeFromFavorites": "Remove from pinned"
     },
     "linkTypes": {
       "symlink": "Symbolic link",

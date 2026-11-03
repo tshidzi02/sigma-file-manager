@@ -39,6 +39,7 @@ export interface UserStats {
   taggedItems: TaggedItem[];
   history: HistoryItem[];
   frequentItems: FrequentItem[];
+  folderColors?: Record<string, string>;
 }
 
 export const DEFAULT_USER_STATS: UserStats = {
@@ -68,4 +69,5 @@ export const DEFAULT_USER_STATS: UserStats = {
   taggedItems: [],
   history: [],
   frequentItems: [],
+  folderColors: {},
 };

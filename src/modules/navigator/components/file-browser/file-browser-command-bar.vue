@@ -27,17 +27,21 @@ import {
   FilePlusIcon,
   FolderPlusIcon,
   InfoIcon,
+  PaletteIcon,
   PencilIcon,
   PlusIcon,
+  RotateCcwIcon,
   ScissorsIcon,
   Share2Icon,
   Trash2Icon,
 } from '@lucide/vue';
 import { useClipboardStore } from '@/stores/runtime/clipboard';
 import { useShortcutsStore } from '@/stores/runtime/shortcuts';
+import { useUserStatsStore } from '@/stores/storage/user-stats';
 import type { DirEntry } from '@/types/dir-entry';
 import type { ContextMenuAction } from './types';
 import { useContextMenuItems } from './composables/use-context-menu-items';
+import { FOLDER_COLOR_PRESETS } from '@/utils/neon-icon-tones';
 
 type ShortcutName = Parameters<ReturnType<typeof useShortcutsStore>['getShortcutLabel']>[0];
 type CommandTone = 'purple' | 'blue' | 'cyan' | 'pink';
@@ -65,6 +69,7 @@ const emit = defineEmits<{
 const { t } = useI18n();
 const clipboardStore = useClipboardStore();
 const shortcutsStore = useShortcutsStore();
+const userStatsStore = useUserStatsStore();
 
 const { isActionVisible } = useContextMenuItems(
   toRef(props, 'selectedEntries'),
@@ -75,6 +80,15 @@ const canPaste = computed(() => (
   !!props.currentPath
   && clipboardStore.hasItems
   && clipboardStore.canPasteTo(props.currentPath)
+));
+
+const selectedFolderPaths = computed(() => (
+  props.selectedEntries.filter(entry => entry.is_dir).map(entry => entry.path)
+));
+
+const canColorFolders = computed(() => (
+  props.selectedEntries.length > 0
+  && selectedFolderPaths.value.length === props.selectedEntries.length
 ));
 
 const clipboardButtons: CommandBarButton[] = [
@@ -147,6 +161,14 @@ function runAction(button: CommandBarButton) {
   }
 
   emit('action', button.action);
+}
+
+function applyFolderColor(color: string | null) {
+  if (!canColorFolders.value) {
+    return;
+  }
+
+  void userStatsStore.setFolderColor(selectedFolderPaths.value, color);
 }
 </script>
 
@@ -282,6 +304,52 @@ function runAction(button: CommandBarButton) {
       </TooltipContent>
     </Tooltip>
 
+    <Tooltip>
+      <DropdownMenu>
+        <TooltipTrigger as-child>
+          <DropdownMenuTrigger as-child>
+            <Button
+              variant="ghost"
+              size="icon"
+              class="file-browser-command-bar__button file-browser-command-bar__button--pink"
+              :disabled="!canColorFolders"
+              :aria-label="t('folderColors.title')"
+            >
+              <PaletteIcon :size="16" />
+            </Button>
+          </DropdownMenuTrigger>
+        </TooltipTrigger>
+        <TooltipContent>
+          {{ t('folderColors.title') }}
+        </TooltipContent>
+        <DropdownMenuContent
+          align="start"
+          side="bottom"
+          class="file-browser-command-bar__dropdown"
+        >
+          <DropdownMenuItem
+            v-for="preset in FOLDER_COLOR_PRESETS"
+            :key="preset.id"
+            class="file-browser-command-bar__menu-item"
+            @click="applyFolderColor(preset.color)"
+          >
+            <span
+              class="file-browser-command-bar__swatch"
+              :style="{ backgroundColor: preset.color }"
+            />
+            <span>{{ t(preset.labelKey) }}</span>
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            class="file-browser-command-bar__menu-item"
+            @click="applyFolderColor(null)"
+          >
+            <RotateCcwIcon :size="14" />
+            <span>{{ t('folderColors.reset') }}</span>
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </Tooltip>
+
     <div class="file-browser-command-bar__separator" />
 
     <Tooltip
@@ -398,6 +466,14 @@ function runAction(button: CommandBarButton) {
   display: flex;
   align-items: center;
   gap: 8px;
+}
+
+.file-browser-command-bar__swatch {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  box-shadow: 0 0 6px currentColor;
 }
 
 .file-browser-command-bar__tooltip-row {

@@ -6,6 +6,7 @@ import { computed, type Ref } from 'vue';
 import type { Component } from 'vue';
 import { HardDriveIcon } from '@lucide/vue';
 import { useUserSettingsStore } from '@/stores/storage/user-settings';
+import { useUserStatsStore } from '@/stores/storage/user-stats';
 import { useNavigatorIconsStore } from '@/stores/runtime/navigator-icons';
 import { useSystemIcon } from './use-system-icon';
 import { getDefaultFileIconComponent } from '@/modules/navigator/components/file-browser/utils';
@@ -18,6 +19,7 @@ import { resolveLoadedIconThemeIcon } from '@/modules/icon-theme/resolver';
 import { isVirtualLocationPath } from '@/utils/virtual-locations';
 import type { DriveEntryMetadata } from '@/types/drive-info';
 import { getDriveIconComponent } from '@/utils/drive-icon';
+import { getNeonIconColor } from '@/utils/neon-icon-tones';
 
 interface NavigatorItemIconParams {
   path: Ref<string> | (() => string);
@@ -45,6 +47,7 @@ function getPathSegments(path: string): string[] {
 
 export function useNavigatorItemIcon(params: NavigatorItemIconParams) {
   const userSettingsStore = useUserSettingsStore();
+  const userStatsStore = useUserStatsStore();
   const navigatorIconsStore = useNavigatorIconsStore();
 
   const path = computed(() => readMaybeRef(params.path, ''));
@@ -159,8 +162,21 @@ export function useNavigatorItemIcon(params: NavigatorItemIconParams) {
     });
   });
 
+  const iconColor = computed<string | null>(() => {
+    if (driveMetadata.value || isVirtualLocationPath(path.value)) {
+      return null;
+    }
+
+    return getNeonIconColor({
+      isDirectory: isDir.value,
+      extension: extension.value,
+      folderColor: isDir.value ? userStatsStore.getFolderColor(path.value) : null,
+    });
+  });
+
   return {
     iconSrc,
     fallbackIconComponent,
+    iconColor,
   };
 }

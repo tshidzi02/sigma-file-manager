@@ -29,6 +29,7 @@ import { ContextMenuShortcut } from '@/components/ui/context-menu';
 import { CONTEXT_MENU_OPEN_COUNT_KEY } from '@/components/dir-entry-interactive';
 import { formatKeybindingKeys } from '@/modules/extensions/api';
 import QuickAccessPanel from './components/quick-access-panel.vue';
+import PinnedPanel from './components/pinned-panel.vue';
 import UbuntuWslIcon from '@/components/icons/ubuntu-wsl-icon.vue';
 import { useTextDirection } from '@/composables/use-text-direction';
 
@@ -136,79 +137,112 @@ function getDriveIcon(drive: {
     class="nav-sidebar"
     data-e2e-root="nav-sidebar"
   >
-    <div
-      class="nav-sidebar-header"
-      :data-tauri-drag-region="windowDragRegion"
-    >
-      <div class="nav-sidebar-header-logo">
-        <img
-          :data-tauri-drag-region="windowDragRegion"
-          src="@/assets/icons/logo-32x32.png"
-          width="20"
-          height="20"
-        >
-      </div>
-    </div>
-
-    <div class="nav-sidebar-items">
-      <template
-        v-for="(item, index) in appStore.pages"
-        :key="index"
+    <div class="nav-sidebar-rail">
+      <div
+        class="nav-sidebar-header"
+        :data-tauri-drag-region="windowDragRegion"
       >
-        <Tooltip
-          v-if="isDashboardPage(item) && quickAccessOnHover"
-          :open="quickAccessTooltipOpen"
-          @update:open="handleQuickAccessTooltipOpenChange"
-        >
-          <TooltipTrigger as-child>
-            <Button
-              class="nav-sidebar-item"
-              size="icon"
-              :value="item.name"
-              :is-active="item.name === router.currentRoute.value.name"
-              @click="router.push({ name: item.name })"
-            >
-              <component
-                :is="item.icon"
-                :size="18"
-                class="nav-sidebar-item-icon"
-              />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent
-            :side="inlineEndSide"
-            align="start"
-            :side-offset="12"
-            :collision-padding="6"
-            class="nav-sidebar__quick-access-tooltip"
+        <div class="nav-sidebar-header-logo">
+          <img
+            :data-tauri-drag-region="windowDragRegion"
+            src="@/assets/icons/logo-32x32.png"
+            width="20"
+            height="20"
           >
-            <div class="nav-sidebar__quick-access-title">
+        </div>
+      </div>
+
+      <div class="nav-sidebar-items">
+        <template
+          v-for="(item, index) in appStore.pages"
+          :key="index"
+        >
+          <Tooltip
+            v-if="isDashboardPage(item) && quickAccessOnHover"
+            :open="quickAccessTooltipOpen"
+            @update:open="handleQuickAccessTooltipOpenChange"
+          >
+            <TooltipTrigger as-child>
+              <Button
+                class="nav-sidebar-item"
+                size="icon"
+                :value="item.name"
+                :is-active="item.name === router.currentRoute.value.name"
+                @click="router.push({ name: item.name })"
+              >
+                <component
+                  :is="item.icon"
+                  :size="18"
+                  class="nav-sidebar-item-icon"
+                />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent
+              :side="inlineEndSide"
+              align="start"
+              :side-offset="12"
+              :collision-padding="6"
+              class="nav-sidebar__quick-access-tooltip"
+            >
+              <div class="nav-sidebar__quick-access-title">
+                <div class="nav-sidebar__tooltip-row">
+                  <span>{{ item.title }}</span>
+                  <ContextMenuShortcut v-if="getPageShortcutLabel(item.name)">
+                    {{ getPageShortcutLabel(item.name) }}
+                  </ContextMenuShortcut>
+                </div>
+              </div>
+              <QuickAccessPanel
+                @drag-start="handleQuickAccessReorderStart"
+                @drag-end="handleQuickAccessReorderEnd"
+              />
+            </TooltipContent>
+          </Tooltip>
+          <Tooltip
+            v-else
+          >
+            <TooltipTrigger as-child>
+              <Button
+                class="nav-sidebar-item"
+                size="icon"
+                :value="item.name"
+                :is-active="item.name === router.currentRoute.value.name"
+                @click="router.push({ name: item.name })"
+              >
+                <component
+                  :is="item.icon"
+                  :size="18"
+                  class="nav-sidebar-item-icon"
+                />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent
+              :side="inlineEndSide"
+              :side-offset="12"
+            >
               <div class="nav-sidebar__tooltip-row">
                 <span>{{ item.title }}</span>
                 <ContextMenuShortcut v-if="getPageShortcutLabel(item.name)">
                   {{ getPageShortcutLabel(item.name) }}
                 </ContextMenuShortcut>
               </div>
-            </div>
-            <QuickAccessPanel
-              @drag-start="handleQuickAccessReorderStart"
-              @drag-end="handleQuickAccessReorderEnd"
-            />
-          </TooltipContent>
-        </Tooltip>
+            </TooltipContent>
+          </Tooltip>
+        </template>
+
         <Tooltip
-          v-else
+          v-for="registration in sortedExtensionPages"
+          :key="registration.page.id"
         >
           <TooltipTrigger as-child>
             <Button
               class="nav-sidebar-item"
               size="icon"
-              :value="item.name"
-              :is-active="item.name === router.currentRoute.value.name"
-              @click="router.push({ name: item.name })"
+              :is-active="isExtensionPageActive(registration.page.id)"
+              @click="openExtensionPage(registration.page.id)"
             >
               <component
-                :is="item.icon"
+                :is="getLucideIcon(registration.page.icon) ?? BlocksIcon"
                 :size="18"
                 class="nav-sidebar-item-icon"
               />
@@ -219,84 +253,58 @@ function getDriveIcon(drive: {
             :side-offset="12"
           >
             <div class="nav-sidebar__tooltip-row">
-              <span>{{ item.title }}</span>
-              <ContextMenuShortcut v-if="getPageShortcutLabel(item.name)">
-                {{ getPageShortcutLabel(item.name) }}
+              <span>{{ registration.page.title }}</span>
+              <ContextMenuShortcut v-if="getExtensionPageShortcutLabel(registration.page.id)">
+                {{ getExtensionPageShortcutLabel(registration.page.id) }}
               </ContextMenuShortcut>
             </div>
           </TooltipContent>
         </Tooltip>
-      </template>
+      </div>
 
-      <Tooltip
-        v-for="registration in sortedExtensionPages"
-        :key="registration.page.id"
-      >
-        <TooltipTrigger as-child>
-          <Button
-            class="nav-sidebar-item"
-            size="icon"
-            :is-active="isExtensionPageActive(registration.page.id)"
-            @click="openExtensionPage(registration.page.id)"
-          >
-            <component
-              :is="getLucideIcon(registration.page.icon) ?? BlocksIcon"
-              :size="18"
-              class="nav-sidebar-item-icon"
-            />
-          </Button>
-        </TooltipTrigger>
-        <TooltipContent
-          :side="inlineEndSide"
-          :side-offset="12"
+      <div class="nav-sidebar-spacer" />
+
+      <div class="nav-sidebar-drives">
+        <Tooltip
+          v-for="drive in drives"
+          :key="drive.path"
         >
-          <div class="nav-sidebar__tooltip-row">
-            <span>{{ registration.page.title }}</span>
-            <ContextMenuShortcut v-if="getExtensionPageShortcutLabel(registration.page.id)">
-              {{ getExtensionPageShortcutLabel(registration.page.id) }}
-            </ContextMenuShortcut>
-          </div>
-        </TooltipContent>
-      </Tooltip>
+          <TooltipTrigger as-child>
+            <Button
+              class="nav-sidebar-drive"
+              size="icon"
+              @click="openDrive(drive.path)"
+              @mousedown="handleDriveMouseDown($event, drive.path)"
+            >
+              <UbuntuWslIcon
+                v-if="drive.drive_type === 'WSL'"
+                :size="16"
+                class="nav-sidebar-drive-icon"
+              />
+              <component
+                v-else
+                :is="getDriveIcon(drive)"
+                :size="16"
+                class="nav-sidebar-drive-icon"
+              />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent
+            :side="inlineEndSide"
+            :side-offset="12"
+            :collision-padding="6"
+            class="nav-sidebar-drive-tooltip"
+          >
+            <DriveCard :drive="drive" />
+          </TooltipContent>
+        </Tooltip>
+      </div>
     </div>
 
-    <div class="nav-sidebar-spacer" />
-
-    <div class="nav-sidebar-drives">
-      <Tooltip
-        v-for="drive in drives"
-        :key="drive.path"
-      >
-        <TooltipTrigger as-child>
-          <Button
-            class="nav-sidebar-drive"
-            size="icon"
-            @click="openDrive(drive.path)"
-            @mousedown="handleDriveMouseDown($event, drive.path)"
-          >
-            <UbuntuWslIcon
-              v-if="drive.drive_type === 'WSL'"
-              :size="16"
-              class="nav-sidebar-drive-icon"
-            />
-            <component
-              v-else
-              :is="getDriveIcon(drive)"
-              :size="16"
-              class="nav-sidebar-drive-icon"
-            />
-          </Button>
-        </TooltipTrigger>
-        <TooltipContent
-          :side="inlineEndSide"
-          :side-offset="12"
-          :collision-padding="6"
-          class="nav-sidebar-drive-tooltip"
-        >
-          <DriveCard :drive="drive" />
-        </TooltipContent>
-      </Tooltip>
-    </div>
+    <PinnedPanel
+      class="nav-sidebar-pinned"
+      :drag-region="windowDragRegion"
+    />
   </div>
 </template>
 
@@ -306,10 +314,24 @@ function getDriveIcon(drive: {
   display: flex;
   width: var(--nav-sidebar-width);
   height: calc(100vh - 12px);
-  flex-direction: column;
+  flex-direction: row;
   border-radius: var(--radius-sm);
   margin: 6px;
   background-color: hsl(var(--background-2));
+}
+
+.nav-sidebar-rail {
+  display: flex;
+  width: 48px;
+  height: 100%;
+  flex-shrink: 0;
+  flex-direction: column;
+}
+
+.nav-sidebar-pinned {
+  min-width: 0;
+  flex: 1;
+  border-inline-start: 1px solid hsl(var(--border) / 50%);
 }
 
 .nav-sidebar-header {
@@ -401,6 +423,10 @@ function getDriveIcon(drive: {
 </style>
 
 <style>
+html:root {
+  --nav-sidebar-width: 236px;
+}
+
 .sigma-ui-tooltip-content.nav-sidebar__quick-access-tooltip {
   overflow: visible;
   padding: 0;
