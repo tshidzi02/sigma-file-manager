@@ -1045,7 +1045,22 @@
       "symlink": "प्रतीकात्मक लिंक",
       "shortcut": "शॉर्टकट",
       "junction": "जंक्शन",
-      "hardlinkedFile": "हार्ड लिंक फ़ाइल"
+      "hardlinkedFile": "हार्ड लिंक फ़ाइल",
+      "extensionFile": "{extension} File",
+      "pdfDocument": "PDF Document",
+      "wordDocument": "Word Document",
+      "spreadsheet": "Spreadsheet",
+      "presentation": "Presentation",
+      "textDocument": "Text Document",
+      "ebook": "{extension} E-book",
+      "image": "{extension} Image",
+      "audio": "{extension} Audio",
+      "video": "{extension} Video",
+      "archive": "{extension} Archive",
+      "application": "Application",
+      "installer": "Installer Package",
+      "script": "{extension} Script",
+      "partialDownload": "Partial Download"
     },
     "linkStatuses": {
       "valid": "मान्य",

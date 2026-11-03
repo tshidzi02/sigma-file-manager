@@ -29,7 +29,7 @@ import FileBrowserListViewColumnCell from './file-browser-list-view-column-cell.
 import type { FileBrowserListVirtualRow } from './composables/use-file-browser-virtual-layout';
 import type { ItemTag } from '@/types/user-stats';
 import {
-  getDirEntryKindKey,
+  getDirEntryKindLabel,
   getDirEntryLinksDisplay,
   getDirEntryLinkStatusKey,
 } from '@/utils/dir-entry-link-metadata';
@@ -336,8 +336,8 @@ function createDisplayRow(row: FileBrowserListVirtualRow): FileBrowserListDispla
   const entryDescription = ctx.entryDescription?.(entry);
   const clipboardPathType = clipboardPathsMap.value.get(entry.path) || undefined;
   const isSelected = ctx.isEntrySelected(entry);
-  const kindLabel = visible.kind ? t(getDirEntryKindKey(entry)) : '';
-  const linkTargetKindLabel = visible.linkTarget && entry.link_type ? t(getDirEntryKindKey(entry)) : '';
+  const kindLabel = visible.kind ? getDirEntryKindLabel(entry, t) : '';
+  const linkTargetKindLabel = visible.linkTarget && entry.link_type ? getDirEntryKindLabel(entry, t) : '';
   const isMetadataColumnVisible = visible.links || visible.linkStatus;
   const itemsDisplay = visible.items ? getItemsDisplay(entry) : '';
   const modifiedDate = visible.modified ? getDateDisplay(entry.modified_time) : emptyDateDisplay;

@@ -23,7 +23,7 @@ import type { RelativeTimeTranslations } from '@/modules/navigator/components/fi
 import { getPathDisplayValue } from '@/utils/normalize-path';
 import { formatRelativeDateDisplay } from '@/utils/relative-date-display';
 import {
-  getDirEntryKindKey,
+  getDirEntryKindLabel,
   getDirEntryLinksDisplay,
   getDirEntryLinkStatusKey,
 } from '@/utils/dir-entry-link-metadata';
@@ -210,7 +210,7 @@ const properties = computed<PropertyItem[]>(() => {
 
   items.push({
     title: t('fileBrowser.kind'),
-    value: t(getDirEntryKindKey(entry)),
+    value: getDirEntryKindLabel(entry, t),
   });
   items.push({
     title: t('fileBrowser.links'),
@@ -235,7 +235,7 @@ const compactItems = computed<string[]>(() => {
   const items: string[] = [];
 
   const kindDisplay = entry.link_type
-    ? t(getDirEntryKindKey(entry))
+    ? getDirEntryKindLabel(entry, t)
     : (entry.is_dir ? t('directory') : (entry.ext ? `.${entry.ext}` : t('file')));
 
   items.push(kindDisplay);

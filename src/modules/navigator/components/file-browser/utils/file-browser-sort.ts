@@ -7,7 +7,7 @@ import type { ListSortColumn, ListSortDirection } from '@/types/user-settings';
 import type { useDirSizesStore } from '@/stores/runtime/dir-sizes';
 import type { ItemTag, TaggedItem } from '@/types/user-stats';
 import {
-  getDirEntryKindKeyFromFields,
+  getDirEntryKindSortKeyFromFields,
   getDirEntryLinksSortValueFromFields,
   getDirEntryLinkStatusKeyFromFields,
 } from '@/utils/dir-entry-link-metadata';
@@ -72,8 +72,8 @@ export function sortFileBrowserEntries(
       const linkFieldsB = getLinkSortFields?.(entryB);
 
       comparison = nameCollator.compare(
-        getDirEntryKindKeyFromFields(entryA.is_dir, linkFieldsA?.link_type ?? entryA.link_type),
-        getDirEntryKindKeyFromFields(entryB.is_dir, linkFieldsB?.link_type ?? entryB.link_type),
+        getDirEntryKindSortKeyFromFields(entryA.is_dir, linkFieldsA?.link_type ?? entryA.link_type, entryA.name),
+        getDirEntryKindSortKeyFromFields(entryB.is_dir, linkFieldsB?.link_type ?? entryB.link_type, entryB.name),
       );
     }
     else if (column === 'links') {
