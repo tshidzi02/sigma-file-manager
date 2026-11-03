@@ -897,6 +897,13 @@
   "when": "When",
   "source": "Source",
   "fileBrowser": {
+    "commandBar": {
+      "new": "New",
+      "cut": "Cut",
+      "paste": "Paste",
+      "delete": "Delete",
+      "openWith": "Open with"
+    },
     "goBack": "Go back",
     "goForward": "Go forward",
     "goUp": "Go up",

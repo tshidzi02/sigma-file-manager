@@ -7,12 +7,14 @@ Copyright © 2021 - present Aleksey Hoffman. All rights reserved.
 import { computed, ref } from 'vue';
 import type { DirEntry } from '@/types/dir-entry';
 import type { Tab } from '@/types/workspaces';
+import type { ContextMenuAction } from './types';
 import { getScrollRestorationKey } from '@/stores/runtime/scroll-restoration';
 import { useFileBrowser } from './composables/use-file-browser';
 import { useOpenCopiedPath } from './composables/use-open-copied-path';
 import { provideFileBrowserContext } from './composables/use-file-browser-context';
 import FileBrowserContent from './file-browser-content.vue';
 import FileBrowserToolbar from './file-browser-toolbar.vue';
+import FileBrowserCommandBar from './file-browser-command-bar.vue';
 import FileBrowserStatusBar from './file-browser-status-bar.vue';
 import FileBrowserRenameDialog from './file-browser-rename-dialog.vue';
 import FileBrowserNewItemDialog from './file-browser-new-item-dialog.vue';
@@ -127,6 +129,36 @@ async function revealAddressBarEntry(parentPath: string, entryPath: string) {
   fb.armFocusRevealStaleRestoreGuard();
   fb.requestFocusEntryAfterRefresh(parentPath, entryPath);
   await fb.navigateToPath(parentPath);
+}
+
+function handleCommandBarAction(action: ContextMenuAction) {
+  const entries = [...fb.selectedEntries.value];
+
+  if (entries.length === 0) {
+    return;
+  }
+
+  if (action === 'open-with') {
+    fb.openOpenWithDialog(entries);
+    return;
+  }
+
+  if (action === 'properties') {
+    void fb.openProperties(entries);
+    return;
+  }
+
+  fb.contextMenu.value = {
+    ...fb.contextMenu.value,
+    targetEntry: entries[entries.length - 1] ?? null,
+    selectedEntries: entries,
+  };
+
+  fb.onContextMenuAction(action);
+}
+
+function handleCommandBarPaste() {
+  void fb.pasteItems();
 }
 
 provideFileBrowserContext({
@@ -246,6 +278,15 @@ defineExpose({
       @create-new-directory="fb.openNewItemDialog('directory')"
       @create-new-file="fb.openNewItemDialog('file')"
       @filter-input-focused="fb.clearFilterInputFocusRequest"
+    />
+    <FileBrowserCommandBar
+      v-if="!hideToolbar && !fb.isExternalMode"
+      :selected-entries="fb.selectedEntries.value"
+      :current-path="fb.currentPath.value"
+      @action="handleCommandBarAction"
+      @paste="handleCommandBarPaste"
+      @create-new-directory="fb.openNewItemDialog('directory')"
+      @create-new-file="fb.openNewItemDialog('file')"
     />
     <AddressBarEditorDialog
       ref="addressBarEditorRef"
