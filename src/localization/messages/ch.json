@@ -1015,7 +1015,22 @@
       "symlink": "符号链接",
       "shortcut": "快捷方式",
       "junction": "连接点",
-      "hardlinkedFile": "硬链接文件"
+      "hardlinkedFile": "硬链接文件",
+      "extensionFile": "{extension} File",
+      "pdfDocument": "PDF Document",
+      "wordDocument": "Word Document",
+      "spreadsheet": "Spreadsheet",
+      "presentation": "Presentation",
+      "textDocument": "Text Document",
+      "ebook": "{extension} E-book",
+      "image": "{extension} Image",
+      "audio": "{extension} Audio",
+      "video": "{extension} Video",
+      "archive": "{extension} Archive",
+      "application": "Application",
+      "installer": "Installer Package",
+      "script": "{extension} Script",
+      "partialDownload": "Partial Download"
     },
     "linkStatuses": {
       "valid": "有效",

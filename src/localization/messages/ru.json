@@ -1045,7 +1045,22 @@
       "symlink": "Символическая ссылка",
       "shortcut": "Ярлык",
       "junction": "Точка соединения",
-      "hardlinkedFile": "Файл с жесткой ссылкой"
+      "hardlinkedFile": "Файл с жесткой ссылкой",
+      "extensionFile": "{extension} File",
+      "pdfDocument": "PDF Document",
+      "wordDocument": "Word Document",
+      "spreadsheet": "Spreadsheet",
+      "presentation": "Presentation",
+      "textDocument": "Text Document",
+      "ebook": "{extension} E-book",
+      "image": "{extension} Image",
+      "audio": "{extension} Audio",
+      "video": "{extension} Video",
+      "archive": "{extension} Archive",
+      "application": "Application",
+      "installer": "Installer Package",
+      "script": "{extension} Script",
+      "partialDownload": "Partial Download"
     },
     "linkStatuses": {
       "valid": "Действительна",

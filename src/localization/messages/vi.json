@@ -1015,7 +1015,22 @@
       "symlink": "Liên kết tượng trưng",
       "shortcut": "Lối tắt",
       "junction": "Điểm nối",
-      "hardlinkedFile": "Tệp liên kết cứng"
+      "hardlinkedFile": "Tệp liên kết cứng",
+      "extensionFile": "{extension} File",
+      "pdfDocument": "PDF Document",
+      "wordDocument": "Word Document",
+      "spreadsheet": "Spreadsheet",
+      "presentation": "Presentation",
+      "textDocument": "Text Document",
+      "ebook": "{extension} E-book",
+      "image": "{extension} Image",
+      "audio": "{extension} Audio",
+      "video": "{extension} Video",
+      "archive": "{extension} Archive",
+      "application": "Application",
+      "installer": "Installer Package",
+      "script": "{extension} Script",
+      "partialDownload": "Partial Download"
     },
     "linkStatuses": {
       "valid": "Hợp lệ",

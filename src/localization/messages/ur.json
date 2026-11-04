@@ -1045,7 +1045,22 @@
       "symlink": "علامتی لنک",
       "shortcut": "شارٹ کٹ",
       "junction": "جنکشن",
-      "hardlinkedFile": "ہارڈ لنک فائل"
+      "hardlinkedFile": "ہارڈ لنک فائل",
+      "extensionFile": "{extension} File",
+      "pdfDocument": "PDF Document",
+      "wordDocument": "Word Document",
+      "spreadsheet": "Spreadsheet",
+      "presentation": "Presentation",
+      "textDocument": "Text Document",
+      "ebook": "{extension} E-book",
+      "image": "{extension} Image",
+      "audio": "{extension} Audio",
+      "video": "{extension} Video",
+      "archive": "{extension} Archive",
+      "application": "Application",
+      "installer": "Installer Package",
+      "script": "{extension} Script",
+      "partialDownload": "Partial Download"
     },
     "linkStatuses": {
       "valid": "درست",
