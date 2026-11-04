@@ -332,29 +332,29 @@ watch(() => clipboardStore.itemCount, (count) => {
 }
 
 .clipboard-toolbar--copy {
-  --clipboard-toolbar-action-hover-bg: hsl(var(--success) / 18%);
-  --clipboard-toolbar-action-hover-color: hsl(var(--success));
+  --clipboard-toolbar-action-hover-bg: hsl(var(--primary) / 18%);
+  --clipboard-toolbar-action-hover-color: hsl(var(--primary));
 
   background: linear-gradient(
     135deg,
-    hsl(var(--success) / 20%) 0%,
-    hsl(var(--success) / 12%) 50%,
-    hsl(var(--success) / 8%) 100%
+    hsl(var(--primary) / 20%) 0%,
+    hsl(var(--primary) / 12%) 50%,
+    hsl(var(--primary) / 8%) 100%
   );
-  color: hsl(var(--success));
+  color: hsl(var(--primary));
 }
 
 .clipboard-toolbar--move {
-  --clipboard-toolbar-action-hover-bg: hsl(var(--destructive) / 20%);
-  --clipboard-toolbar-action-hover-color: hsl(var(--destructive));
+  --clipboard-toolbar-action-hover-bg: hsl(var(--primary) / 20%);
+  --clipboard-toolbar-action-hover-color: hsl(var(--primary));
 
   background: linear-gradient(
     135deg,
-    hsl(var(--dangerous) / 20%) 0%,
-    hsl(var(--dangerous) / 12%) 50%,
-    hsl(var(--dangerous) / 8%) 100%
+    hsl(var(--primary) / 20%) 0%,
+    hsl(var(--primary) / 12%) 50%,
+    hsl(var(--primary) / 8%) 100%
   );
-  color: hsl(var(--dangerous));
+  color: hsl(var(--primary));
 }
 
 .clipboard-slide-enter-active {
@@ -482,13 +482,13 @@ watch(() => clipboardStore.itemCount, (count) => {
 }
 
 .clipboard-toolbar__dropdown--copy {
-  --clipboard-toolbar-dropdown-action-hover-bg: hsl(var(--success) / 18%);
-  --clipboard-toolbar-dropdown-action-hover-color: hsl(var(--success));
+  --clipboard-toolbar-dropdown-action-hover-bg: hsl(var(--primary) / 18%);
+  --clipboard-toolbar-dropdown-action-hover-color: hsl(var(--primary));
 }
 
 .clipboard-toolbar__dropdown--move {
-  --clipboard-toolbar-dropdown-action-hover-bg: hsl(var(--destructive) / 20%);
-  --clipboard-toolbar-dropdown-action-hover-color: hsl(var(--destructive));
+  --clipboard-toolbar-dropdown-action-hover-bg: hsl(var(--primary) / 20%);
+  --clipboard-toolbar-dropdown-action-hover-color: hsl(var(--primary));
 }
 
 .clipboard-toolbar__dropdown {

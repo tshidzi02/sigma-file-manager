@@ -40,12 +40,6 @@ type PinnedItem = {
   color: string;
 };
 
-withDefaults(defineProps<{
-  dragRegion?: string;
-}>(), {
-  dragRegion: '',
-});
-
 const LIKELY_FILE_PATTERN = /\.[a-z0-9]{1,8}$/i;
 
 const router = useRouter();
@@ -68,6 +62,10 @@ function normalizeForCompare(path: string): string {
   return path.replace(/\\/g, '/').replace(/\/+$/, '').toLowerCase();
 }
 
+function getLocationColor(path: string, fallback: string): string {
+  return userStatsStore.getFolderColor(path) ?? fallback;
+}
+
 const homeLocation = computed<SidebarLocation | null>(() => {
   const path = userPathsStore.userPaths.homeDir;
 
@@ -80,7 +78,7 @@ const homeLocation = computed<SidebarLocation | null>(() => {
     labelKey: 'pinnedSidebar.home',
     path,
     icon: HouseIcon,
-    color: NEON_ICON_TONES.folder,
+    color: getLocationColor(path, NEON_ICON_TONES.folder),
   };
 });
 
@@ -92,42 +90,42 @@ const systemLocations = computed<SidebarLocation[]>(() => {
       labelKey: 'pinnedSidebar.desktop',
       path: paths.desktopDir,
       icon: MonitorIcon,
-      color: NEON_ICON_TONES.application,
+      color: getLocationColor(paths.desktopDir, NEON_ICON_TONES.application),
     },
     {
       id: 'downloads',
       labelKey: 'pinnedSidebar.downloads',
       path: paths.downloadDir,
       icon: ArrowDownToLineIcon,
-      color: NEON_ICON_TONES.code,
+      color: getLocationColor(paths.downloadDir, NEON_ICON_TONES.code),
     },
     {
       id: 'documents',
       labelKey: 'pinnedSidebar.documents',
       path: paths.documentDir,
       icon: FileTextIcon,
-      color: NEON_ICON_TONES.document,
+      color: getLocationColor(paths.documentDir, NEON_ICON_TONES.document),
     },
     {
       id: 'pictures',
       labelKey: 'pinnedSidebar.pictures',
       path: paths.pictureDir,
       icon: ImageIcon,
-      color: NEON_ICON_TONES.image,
+      color: getLocationColor(paths.pictureDir, NEON_ICON_TONES.image),
     },
     {
       id: 'music',
       labelKey: 'pinnedSidebar.music',
       path: paths.audioDir,
       icon: MusicIcon,
-      color: NEON_ICON_TONES.audio,
+      color: getLocationColor(paths.audioDir, NEON_ICON_TONES.audio),
     },
     {
       id: 'videos',
       labelKey: 'pinnedSidebar.videos',
       path: paths.videoDir,
       icon: ClapperboardIcon,
-      color: NEON_ICON_TONES.video,
+      color: getLocationColor(paths.videoDir, NEON_ICON_TONES.video),
     },
   ];
 
@@ -146,7 +144,7 @@ const pinnedItems = computed<PinnedItem[]>(() => {
       color: getNeonIconColor({
         isDirectory: !isLikelyFile,
         extension: isLikelyFile ? name.split('.').pop() ?? null : null,
-        folderColor: isLikelyFile ? null : userStatsStore.getFolderColor(item.path),
+        folderColor: userStatsStore.getFolderColor(item.path),
       }),
     };
   });
@@ -185,11 +183,6 @@ function handleMouseDown(event: MouseEvent, path: string, isLikelyFile = false) 
 
 <template>
   <nav class="pinned-panel">
-    <div
-      class="pinned-panel__header"
-      :data-tauri-drag-region="dragRegion"
-    />
-
     <div class="pinned-panel__scroll">
       <button
         v-if="homeLocation"
@@ -284,12 +277,6 @@ function handleMouseDown(event: MouseEvent, path: string, isLikelyFile = false) 
   flex-direction: column;
 }
 
-.pinned-panel__header {
-  height: 40px;
-  flex-shrink: 0;
-  margin-bottom: 12px;
-}
-
 .pinned-panel__scroll {
   display: flex;
   min-height: 0;
@@ -318,12 +305,12 @@ function handleMouseDown(event: MouseEvent, path: string, isLikelyFile = false) 
 }
 
 .pinned-panel__item:hover {
-  background-color: hsl(var(--primary) / 10%);
+  background-color: hsl(var(--foreground) / 6%);
 }
 
 .pinned-panel__item[data-active] {
-  border-color: hsl(var(--primary) / 45%);
-  background-color: hsl(var(--primary) / 20%);
+  border-color: hsl(var(--foreground) / 12%);
+  background-color: hsl(var(--foreground) / 10%);
   color: hsl(var(--foreground));
 }
 
@@ -358,7 +345,7 @@ function handleMouseDown(event: MouseEvent, path: string, isLikelyFile = false) 
 }
 
 .pinned-panel__heading-icon {
-  color: hsl(var(--primary));
+  color: hsl(var(--muted-foreground));
 }
 
 .pinned-panel__divider {

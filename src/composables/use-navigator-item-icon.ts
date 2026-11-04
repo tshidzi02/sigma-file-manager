@@ -170,7 +170,7 @@ export function useNavigatorItemIcon(params: NavigatorItemIconParams) {
     return getNeonIconColor({
       isDirectory: isDir.value,
       extension: extension.value,
-      folderColor: isDir.value ? userStatsStore.getFolderColor(path.value) : null,
+      folderColor: userStatsStore.getFolderColor(path.value),
     });
   });
 

@@ -29,6 +29,7 @@ import {
   InfoIcon,
   PaletteIcon,
   PencilIcon,
+  PipetteIcon,
   PlusIcon,
   RotateCcwIcon,
   ScissorsIcon,
@@ -54,6 +55,8 @@ type CommandBarButton = {
   tone: CommandTone;
 };
 
+const HEX_COLOR_PATTERN = /^#[0-9a-f]{6}$/i;
+
 const props = defineProps<{
   selectedEntries: DirEntry[];
   currentPath: string;
@@ -71,6 +74,9 @@ const clipboardStore = useClipboardStore();
 const shortcutsStore = useShortcutsStore();
 const userStatsStore = useUserStatsStore();
 
+const customColorInput = ref<HTMLInputElement | null>(null);
+const pendingColorPaths = ref<string[]>([]);
+
 const { isActionVisible } = useContextMenuItems(
   toRef(props, 'selectedEntries'),
   { disableDestructiveActions: ref(false) },
@@ -82,14 +88,8 @@ const canPaste = computed(() => (
   && clipboardStore.canPasteTo(props.currentPath)
 ));
 
-const selectedFolderPaths = computed(() => (
-  props.selectedEntries.filter(entry => entry.is_dir).map(entry => entry.path)
-));
-
-const canColorFolders = computed(() => (
-  props.selectedEntries.length > 0
-  && selectedFolderPaths.value.length === props.selectedEntries.length
-));
+const selectedPaths = computed(() => props.selectedEntries.map(entry => entry.path));
+const canColorItems = computed(() => props.selectedEntries.length > 0);
 
 const clipboardButtons: CommandBarButton[] = [
   {
@@ -163,17 +163,47 @@ function runAction(button: CommandBarButton) {
   emit('action', button.action);
 }
 
-function applyFolderColor(color: string | null) {
-  if (!canColorFolders.value) {
+function applyItemColor(color: string | null, paths: string[] = selectedPaths.value) {
+  if (paths.length === 0) {
     return;
   }
 
-  void userStatsStore.setFolderColor(selectedFolderPaths.value, color);
+  void userStatsStore.setFolderColor(paths, color);
+}
+
+function openCustomColorPicker() {
+  const input = customColorInput.value;
+
+  if (!input || !canColorItems.value) {
+    return;
+  }
+
+  pendingColorPaths.value = [...selectedPaths.value];
+  const currentColor = userStatsStore.getFolderColor(pendingColorPaths.value[0] ?? '');
+  input.value = currentColor && HEX_COLOR_PATTERN.test(currentColor) ? currentColor : '#a26bf2';
+  input.click();
+}
+
+function handleCustomColorChange(event: Event) {
+  const target = event.target as HTMLInputElement | null;
+
+  if (target?.value) {
+    applyItemColor(target.value, pendingColorPaths.value);
+  }
 }
 </script>
 
 <template>
   <div class="file-browser-command-bar">
+    <input
+      ref="customColorInput"
+      type="color"
+      class="file-browser-command-bar__color-input"
+      tabindex="-1"
+      aria-hidden="true"
+      @change="handleCustomColorChange"
+    >
+
     <DropdownMenu>
       <DropdownMenuTrigger as-child>
         <Button
@@ -312,7 +342,7 @@ function applyFolderColor(color: string | null) {
               variant="ghost"
               size="icon"
               class="file-browser-command-bar__button file-browser-command-bar__button--pink"
-              :disabled="!canColorFolders"
+              :disabled="!canColorItems"
               :aria-label="t('folderColors.title')"
             >
               <PaletteIcon :size="16" />
@@ -331,7 +361,7 @@ function applyFolderColor(color: string | null) {
             v-for="preset in FOLDER_COLOR_PRESETS"
             :key="preset.id"
             class="file-browser-command-bar__menu-item"
-            @click="applyFolderColor(preset.color)"
+            @click="applyItemColor(preset.color)"
           >
             <span
               class="file-browser-command-bar__swatch"
@@ -341,7 +371,14 @@ function applyFolderColor(color: string | null) {
           </DropdownMenuItem>
           <DropdownMenuItem
             class="file-browser-command-bar__menu-item"
-            @click="applyFolderColor(null)"
+            @click="openCustomColorPicker"
+          >
+            <PipetteIcon :size="14" />
+            <span>{{ t('folderColors.custom') }}</span>
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            class="file-browser-command-bar__menu-item"
+            @click="applyItemColor(null)"
           >
             <RotateCcwIcon :size="14" />
             <span>{{ t('folderColors.reset') }}</span>
@@ -386,6 +423,7 @@ function applyFolderColor(color: string | null) {
 
 <style scoped>
 .file-browser-command-bar {
+  position: relative;
   display: flex;
   height: 40px;
   flex-shrink: 0;
@@ -394,6 +432,18 @@ function applyFolderColor(color: string | null) {
   border-bottom: 1px solid hsl(var(--border));
   gap: 2px;
   overflow-x: auto;
+}
+
+.file-browser-command-bar__color-input {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  border: 0;
+  opacity: 0;
+  pointer-events: none;
 }
 
 .file-browser-command-bar__separator {
@@ -451,7 +501,7 @@ function applyFolderColor(color: string | null) {
 
 .file-browser-command-bar__button:hover:not(:disabled),
 .file-browser-command-bar__new-button:hover {
-  background-color: hsl(var(--command-tone) / 15%);
+  background-color: hsl(var(--foreground) / 8%);
 }
 
 .file-browser-command-bar__button:disabled {
@@ -472,8 +522,8 @@ function applyFolderColor(color: string | null) {
   width: 14px;
   height: 14px;
   flex-shrink: 0;
+  border: 1px solid hsl(var(--foreground) / 20%);
   border-radius: 50%;
-  box-shadow: 0 0 6px currentColor;
 }
 
 .file-browser-command-bar__tooltip-row {

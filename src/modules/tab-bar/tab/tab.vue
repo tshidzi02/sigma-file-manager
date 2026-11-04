@@ -349,10 +349,10 @@ onBeforeUnmount(() => {
   align-items: center;
   padding: 0 10px;
   padding-right: 4px;
-  border: 1px solid hsl(var(--foreground) / 8%);
+  border: 1px solid transparent;
   border-radius: var(--radius-sm);
   -webkit-app-region: no-drag;
-  background-color: hsl(var(--foreground) / 3%);
+  background-color: hsl(var(--foreground) / 5%);
   color: hsl(var(--muted-foreground));
   cursor: pointer;
   opacity: 0.9;
@@ -360,43 +360,37 @@ onBeforeUnmount(() => {
   user-select: none;
 }
 
+.tab::after {
+  position: absolute;
+  top: 25%;
+  right: 0;
+  width: 1px;
+  height: 50%;
+  background-color: hsl(var(--foreground) / 18%);
+  content: "";
+}
+
 .tab:hover {
-  border-color: hsl(var(--primary) / 30%);
-  background-color: hsl(var(--primary) / 10%);
+  background-color: hsl(var(--foreground) / 9%);
 }
 
 .tab[is-active="true"] {
-  border-color: hsl(var(--primary) / 60%);
-  background-color: hsl(var(--primary) / 22%);
+  border-color: hsl(var(--foreground) / 16%);
+  background-color: rgb(0 0 0 / 45%);
   color: hsl(var(--foreground));
   opacity: 1;
 }
 
+.tab[is-active="true"]::after {
+  display: none;
+}
+
 .tab[is-active="true"]:hover {
-  border-color: hsl(var(--primary) / 75%);
-  background-color: hsl(var(--primary) / 28%);
+  background-color: rgb(0 0 0 / 55%);
 }
 
 .tab[is-active="true"].tab--active-title-bold .tab__title {
   font-weight: 700;
-}
-
-.tab::after {
-  position: absolute;
-  bottom: 0;
-  left: 50%;
-  width: 92%;
-  height: 2px;
-  border-radius: 2px;
-  background-color: hsl(var(--primary) / 0%);
-  box-shadow: 0 0 6px hsl(var(--primary) / 0%);
-  content: "";
-  transform: translateX(-50%);
-}
-
-.tab[is-active="true"]::after {
-  background-color: hsl(var(--primary));
-  box-shadow: 0 0 10px hsl(var(--primary) / 90%);
 }
 
 .tab[data-drag-over],
@@ -433,7 +427,7 @@ onBeforeUnmount(() => {
 }
 
 .tab__close-button:hover {
-  background-color: hsl(var(--primary) / 20%);
+  background-color: hsl(var(--foreground) / 12%);
 }
 
 .tab__tooltip-title {

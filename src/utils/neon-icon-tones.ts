@@ -68,8 +68,12 @@ export function getNeonIconColor(target: {
   extension?: string | null;
   folderColor?: string | null;
 }): string {
+  if (target.folderColor) {
+    return target.folderColor;
+  }
+
   if (target.isDirectory) {
-    return target.folderColor || NEON_ICON_TONES.folder;
+    return NEON_ICON_TONES.folder;
   }
 
   const tone = TONE_BY_EXTENSION.get(normalizeIconExtension(target.extension)) ?? 'other';
