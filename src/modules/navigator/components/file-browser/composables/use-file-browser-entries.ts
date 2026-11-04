@@ -11,6 +11,7 @@ import { useDirSizesStore } from '@/stores/runtime/dir-sizes';
 import { useItemCountsStore } from '@/stores/runtime/item-counts';
 import { useLinkMetadataStore } from '@/stores/runtime/link-metadata';
 import { useUserStatsStore } from '@/stores/storage/user-stats';
+import { useUserSettingsStore } from '@/stores/storage/user-settings';
 import {
   sortFileBrowserEntries,
   type FileBrowserEntrySortTagContext,
@@ -38,6 +39,7 @@ export function useFileBrowserEntries(
   const itemCountsStore = useItemCountsStore();
   const linkMetadataStore = useLinkMetadataStore();
   const userStatsStore = useUserStatsStore();
+  const userSettingsStore = useUserSettingsStore();
   const quickSearchCache = shallowRef(createFileBrowserQuickSearchCache());
 
   watch(dirContents, () => {
@@ -90,6 +92,11 @@ export function useFileBrowserEntries(
         column,
         sortDirection.value,
         sortContext,
+        {
+          // `!== false` keeps folders first for users whose saved settings
+          // predate this option (value is undefined).
+          foldersFirst: userSettingsStore.userSettings.navigator.sortFoldersFirst !== false,
+        },
       );
     }
 

@@ -472,6 +472,7 @@
       "sorting": "Sorting",
       "sortAscending": "Ascending",
       "sortDescending": "Descending",
+      "sortFoldersFirst": "Show folders first",
       "settingsScope": "Scope",
       "settingsScopeGlobal": "Global",
       "settingsScopeThisFolder": "This folder",

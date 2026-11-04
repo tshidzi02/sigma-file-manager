@@ -33,6 +33,7 @@ import {
   CircleHelpIcon,
   EllipsisVerticalIcon,
   EyeOffIcon,
+  FoldersIcon,
   InfoIcon,
   PanelRightIcon,
 } from '@lucide/vue';
@@ -91,6 +92,9 @@ const showHiddenFiles = computed(() => scopedSettings.value.showHiddenFiles);
 const infoPanelDynamicSize = computed(() => (
   userSettingsStore.userSettings.navigator.infoPanel.dynamicSize
 ));
+const sortFoldersFirst = computed(() => (
+  userSettingsStore.userSettings.navigator.sortFoldersFirst !== false
+));
 const splitViewMode = computed(() => (
   userSettingsStore.userSettings.navigator.splitViewMode
 ));
@@ -133,6 +137,10 @@ function handleToggleHiddenFiles(checked: boolean) {
 
 async function handleToggleInfoPanelDynamicSize(enabled: boolean) {
   await userSettingsStore.set('navigator.infoPanel.dynamicSize', enabled);
+}
+
+async function handleToggleSortFoldersFirst(enabled: boolean) {
+  await userSettingsStore.set('navigator.sortFoldersFirst', enabled);
 }
 
 function handleUseGlobalSettings() {
@@ -279,6 +287,27 @@ function handleSettingsScopeChange(value: string | number) {
                     :sort-source="scopedSettings"
                     @persist="persistScopedPatch"
                   />
+                  <Collapsible
+                    :open="showGlobalOnlySettings"
+                    class="navigator-settings-menu__reset-collapsible"
+                  >
+                    <CollapsibleContent class="navigator-settings-menu__reset-content">
+                      <div class="navigator-settings-menu__toggle-row navigator-settings-menu__toggle-row--nested">
+                        <div class="navigator-settings-menu__item-start">
+                          <FoldersIcon
+                            :size="16"
+                            class="navigator-settings-menu__item-icon"
+                          />
+                          <span class="navigator-settings-menu__item-label">{{ t('settings.navigator.sortFoldersFirst') }}</span>
+                        </div>
+                        <Switch
+                          class="navigator-settings-menu__switch"
+                          :model-value="sortFoldersFirst"
+                          @update:model-value="handleToggleSortFoldersFirst"
+                        />
+                      </div>
+                    </CollapsibleContent>
+                  </Collapsible>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem

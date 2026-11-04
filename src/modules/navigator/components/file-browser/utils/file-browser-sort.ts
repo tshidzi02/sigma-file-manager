@@ -21,6 +21,15 @@ export type FileBrowserEntrySortTagContext = {
   getLinkSortFields?: (entry: DirEntry) => LinkMetadataSortFields;
 };
 
+export type FileBrowserEntrySortOptions = {
+  /**
+   * When true (default), directories are always listed before files,
+   * regardless of the sort column and direction.
+   * When false, directories and files are sorted together.
+   */
+  foldersFirst?: boolean;
+};
+
 const nameCollator = new Intl.Collator(undefined, { numeric: true });
 
 export function getFileBrowserEntryResolvedSizeBytes(entry: DirEntry, dirSizesStore: DirSizesStore): number {
@@ -50,16 +59,16 @@ export function sortFileBrowserEntries(
   column: ListSortColumn,
   direction: ListSortDirection,
   tagContext?: FileBrowserEntrySortTagContext,
+  options: FileBrowserEntrySortOptions = {},
 ): DirEntry[] {
   const multiplier = direction === 'asc' ? 1 : -1;
+  const foldersFirst = options.foldersFirst ?? true;
   const tagNamesByPath = tagContext ? createTagNamesByPath(tagContext) : new Map<string, string[]>();
   const getLinkSortFields = tagContext?.getLinkSortFields;
 
   return [...items].sort((entryA, entryB) => {
-    const dirsFirst = (entryA.is_dir === entryB.is_dir) ? 0 : (entryA.is_dir ? -1 : 1);
-
-    if (dirsFirst !== 0) {
-      return dirsFirst;
+    if (foldersFirst && entryA.is_dir !== entryB.is_dir) {
+      return entryA.is_dir ? -1 : 1;
     }
 
     let comparison: number;
