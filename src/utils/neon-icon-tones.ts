@@ -21,18 +21,18 @@ export const FOLDER_COLOR_PRESETS: readonly FolderColorPreset[] = [
 ];
 
 export const NEON_ICON_TONES = {
-  folder: 'hsl(var(--primary))',
-  document: 'hsl(217 91% 65%)',
-  spreadsheet: 'hsl(150 90% 55%)',
-  presentation: 'hsl(25 95% 62%)',
-  ebook: 'hsl(285 85% 70%)',
-  image: 'hsl(320 85% 68%)',
-  audio: 'hsl(270 90% 72%)',
-  video: 'hsl(340 90% 65%)',
-  archive: 'hsl(48 96% 60%)',
-  code: 'hsl(186 100% 55%)',
-  application: 'hsl(240 90% 74%)',
-  other: 'hsl(220 15% 72%)',
+  folder: 'hsl(var(--sigma-icon-folder, var(--primary)))',
+  document: 'hsl(var(--sigma-icon-document, 217 91% 65%))',
+  spreadsheet: 'hsl(var(--sigma-icon-spreadsheet, 150 90% 55%))',
+  presentation: 'hsl(var(--sigma-icon-presentation, 25 95% 62%))',
+  ebook: 'hsl(var(--sigma-icon-ebook, 285 85% 70%))',
+  image: 'hsl(var(--sigma-icon-image, 320 85% 68%))',
+  audio: 'hsl(var(--sigma-icon-audio, 270 90% 72%))',
+  video: 'hsl(var(--sigma-icon-video, 340 90% 65%))',
+  archive: 'hsl(var(--sigma-icon-archive, 48 96% 60%))',
+  code: 'hsl(var(--sigma-icon-code, 186 100% 55%))',
+  application: 'hsl(var(--sigma-icon-application, 240 90% 74%))',
+  other: 'hsl(var(--sigma-icon-other, 220 15% 72%))',
 } as const;
 
 type NeonTone = keyof typeof NEON_ICON_TONES;
